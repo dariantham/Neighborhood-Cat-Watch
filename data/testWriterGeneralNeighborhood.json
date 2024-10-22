@@ -1,0 +1,21 @@
+{
+    "rescued": 0,
+    "cats": [
+        {
+            "name": "Oreo",
+            "daysFed": 0,
+            "daysPassed": 0
+        },
+        {
+            "name": "Sam",
+            "daysFed": 0,
+            "daysPassed": 0
+        },
+        {
+            "name": "Tom",
+            "daysFed": 0,
+            "daysPassed": 0
+        }
+    ],
+    "present": 3
+}

@@ -1,0 +1,9 @@
+{
+    "rescued": 1,
+    "cats": [{
+        "name": "Sam",
+        "daysFed": 0,
+        "daysPassed": 0
+    }],
+    "present": 1
+}

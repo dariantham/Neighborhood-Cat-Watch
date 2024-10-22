@@ -3,15 +3,28 @@ package ui;
 import model.Cat;
 import model.Neighborhood;
 
+import persistence.JsonReader;
+import persistence.JsonWriter;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
+import org.json.JSONArray;
 
 // Cat Watch application
 public class CatWatchApp {
-    private Neighborhood neighborhood;
+    private static final String JSON_STORE = "./data/neighborhood.json";
     private Scanner input;
+    private Neighborhood neighborhood;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the Cat Watch application
-    public CatWatchApp() {
+    public CatWatchApp() throws FileNotFoundException {
+        input = new Scanner(System.in);
+        neighborhood = new Neighborhood();
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
         runCatWatch();
     }
 
@@ -50,12 +63,16 @@ public class CatWatchApp {
             deleteCatOption();
         } else if (command.equals("e")) {
             editCatOption();
-        } else if (command.equals("l")) {
+        } else if (command.equals("v")) {
             viewList();
         } else if (command.equals("p")) {
             viewPresent();
         } else if (command.equals("r")) {
             viewRescued();
+        } else if (command.equals("s")) {
+            saveNeighborhood();
+        } else if (command.equals("l")) {
+            loadNeighborhood();
         } else {
             System.out.println("Selection not valid...");
         }
@@ -77,9 +94,11 @@ public class CatWatchApp {
         System.out.println("\ta -> add a cat to the list");
         System.out.println("\td -> delete a cat to the list");
         System.out.println("\te -> edit info about a cat on the list");
-        System.out.println("\tl -> view the list");
+        System.out.println("\tv -> view the list");
         System.out.println("\tp -> return number of cats present in the list");
         System.out.println("\tr -> return number of cats rescued");
+        System.out.println("\ts -> save neighborhood to file");
+        System.out.println("\tl -> load neighborhood from file");
         System.out.println("\tq -> quit");
     }
 
@@ -212,6 +231,35 @@ public class CatWatchApp {
                 System.out.printf("\nWARNING: %s has been a stray for over 7 days, please send to vet or shelter!",
                         neighborhood.getCatList().get(i).getName());
             }
+        }
+    }
+
+    // EFFECTS: saves the neighborhood to file
+    // NOTE: Based on the sample JsonSerializationDemo code provided from the course
+    private void saveNeighborhood() {
+        JSONArray jsonCats = new JSONArray();
+        for (Cat cat : neighborhood.getCatList()) {
+            jsonCats.put(cat.toJson());
+        }
+
+        try {
+            jsonWriter.open();
+            jsonWriter.write(neighborhood);
+            jsonWriter.close();
+            System.out.println("Saved current neighborhood status to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads neighborhood from file
+    private void loadNeighborhood() {
+        try {
+            neighborhood = jsonReader.read();
+            System.out.println("Loaded neighborhood from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
         }
     }
 }

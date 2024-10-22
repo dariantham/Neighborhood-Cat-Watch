@@ -1,7 +1,10 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 // Represents a cat having a name, number of days fed and number of days passed since first sighting
-public class Cat {
+public class Cat implements Writable {
     private String name;          // the name of the cat, determined by the user
     private int daysFed;          // tracks how many days the cat is fed
     private int daysPassed;       // tracks how many days passed since first encounter with cat
@@ -31,6 +34,7 @@ public class Cat {
         return daysPassed;
     }
 
+
     /*
      * MODIFIES: this
      * EFFECTS: daysFed is incremented by 1, with a maximum of 7 days fed
@@ -39,6 +43,7 @@ public class Cat {
         if (daysFed < 7) {
             this.daysFed++;
         }
+        EventLog.getInstance().logEvent(new Event("Increased days fed for: " + this.getName()));
     }
 
     /*
@@ -49,6 +54,15 @@ public class Cat {
         if (daysPassed < 7) {
             this.daysPassed++;
         }
+        EventLog.getInstance().logEvent(new Event("Increased days passed for: " + this.getName()));
+    }
+
+    public void setDaysFed(int daysFed) {
+        this.daysFed = daysFed;
+    }
+
+    public void setDaysPassed(int daysPassed) {
+        this.daysPassed = daysPassed;
     }
 
     /*
@@ -69,6 +83,16 @@ public class Cat {
                 b = false;
             }
         }
+        EventLog.getInstance().logEvent(new Event(this.getName() + " has been released and set for shelter or vet"));
         return b;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("daysFed", daysFed);
+        json.put("daysPassed", daysPassed);
+        return json;
     }
 }
